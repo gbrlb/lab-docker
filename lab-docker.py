@@ -27,7 +27,10 @@ except ImportError as e:
 class EnvironmentConfig:
     def __init__(self):
         self.home = os.environ['HOME']
-        self.display = os.environ['DISPLAY']
+        if 'DISPLAY' in os.environ:
+            self.display = os.getenv('DISPLAY')
+        else:
+            self.display = ':1'
         self.shell = '/bin/bash'
 
 
@@ -63,10 +66,10 @@ class ContainerConfig:
         self.device_requests = []
         self.user = environment_config.id+':users'
         self.environment = [
-	    'USER='+ environment_config.user,
+	        'USER='+ environment_config.user,
             'QT_X11_NO_MITSHM=1',
             'SHELL=' + environment_config.shell,
-            'DISPLAY=' + os.environ['DISPLAY'],
+            'DISPLAY=' + environment_config.display,
             'DOCKER=1', 'NVIDIA_VISIBLE_DEVICES=all'
         ]
         self.volumes = [
